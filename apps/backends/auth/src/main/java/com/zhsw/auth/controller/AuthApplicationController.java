@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApplicationController implements AuthApi {
     @Override
     public ResponseEntity<TrySpecGenerationGET200Response> trySpecGenerationGET() {
-        return new ResponseEntity(new TrySpecGenerationGET200Response().key("ciao"), HttpStatus.OK);
+        return new ResponseEntity(new TrySpecGenerationGET200Response().key("ciao2333"), HttpStatus.OK);
     }
 
     @Override

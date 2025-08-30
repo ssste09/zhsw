@@ -3,8 +3,7 @@ name: PR Checks
 on:
   pull_request:
     branches:
-      - main
-      - develop
+      - master
 
 jobs:
   tests:
@@ -25,14 +24,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Make Maven wrapper executable
+        working-directory: apps/backends/${{ matrix.backend }}
+        run: chmod +x mvnw
+
       - name: Run Unit Tests
         working-directory: apps/backends/${{ matrix.backend }}
-        run: ./mvnw test -Dgroups=unit
+        run: make run_tests
 
       - name: Run Integration Tests
         working-directory: apps/backends/${{ matrix.backend }}
-        run: ./mvnw verify -Dgroups=integration
+        run: make run_tests_int
 
       - name: Run E2E Tests
         working-directory: apps/backends/${{ matrix.backend }}
-        run: ./mvnw verify -Dgroups=e2e
+        run: make run_tests_e2e
