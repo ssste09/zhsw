@@ -3,44 +3,25 @@ info:
   title: Auth API
   version: 1.0.0
 paths:
-  /auth/login:
+  /auth/users/{userId}:
     get:
       tags:
         - authController
       summary: Some summary
-      operationId: trySpecGenerationGET
-      responses:
-        '200':
-          description: Some random description
-          content:
-            application/json:
-              schema:
-                properties:
-                  key:
-                    type: string
-  /auth/login/users/{companyId}:
-    get:
-      tags:
-        - authController
-      summary: Some summary
-      operationId: listUsersGET
+      operationId: userGET
       parameters:
-        - name: companyId
+        - name: userId
           in: path
           required: true
           schema:
-            type: string
+            type: integer
       responses:
         '200':
-          description: Some random description
+          description: returns the current user's details
           content:
             application/json:
               schema:
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
 
 
 components:
@@ -48,9 +29,52 @@ components:
     User:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
+          example: 123456
         name:
           type: string
         lastName:
           type: string
-        age:
-          type: integer
+        gender:
+          type: string
+          enum: [ male, female, other ]
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          example: "+18-202-555-0173"
+        birthDate:
+          type: string
+          format: date
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+        - id
+        - name
+        - lastName
+        - gender
+        - email
+        - phone
+        - birthDate
+        - addresses
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+      required:
+        - street
+        - city
+        - postalCode
+        - country
+
