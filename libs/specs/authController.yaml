@@ -1,0 +1,56 @@
+openapi: 3.0.1
+info:
+  title: Auth API
+  version: 1.0.0
+paths:
+  /auth/login:
+    get:
+      tags:
+        - authController
+      summary: Some summary
+      operationId: trySpecGenerationGET
+      responses:
+        '200':
+          description: Some random description
+          content:
+            application/json:
+              schema:
+                properties:
+                  key:
+                    type: string
+  /auth/login/users/{companyId}:
+    get:
+      tags:
+        - authController
+      summary: Some summary
+      operationId: listUsersGET
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Some random description
+          content:
+            application/json:
+              schema:
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        lastName:
+          type: string
+        age:
+          type: integer

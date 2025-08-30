@@ -1,0 +1,76 @@
+openapi: 3.0.1
+info:
+  title: Auth API
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /auth/login:
+    get:
+      operationId: trySpecGenerationGET
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/trySpecGenerationGET_200_response"
+          description: Some random description
+      summary: Some summary
+      tags:
+      - authController
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: authController
+  /auth/login/users:
+    get:
+      operationId: listUsersGET
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listUsersGET_200_response"
+          description: Some random description
+      summary: Some summary
+      tags:
+      - authController
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: authController
+components:
+  schemas:
+    User:
+      example:
+        lastName: lastName
+        name: name
+        age: 0
+      properties:
+        name:
+          type: string
+        lastName:
+          type: string
+        age:
+          type: integer
+      type: object
+    trySpecGenerationGET_200_response:
+      example:
+        key: key
+      properties:
+        key:
+          type: string
+    listUsersGET_200_response:
+      example:
+        users:
+        - lastName: lastName
+          name: name
+          age: 0
+        - lastName: lastName
+          name: name
+          age: 0
+      properties:
+        users:
+          items:
+            $ref: "#/components/schemas/User"
+          type: array
