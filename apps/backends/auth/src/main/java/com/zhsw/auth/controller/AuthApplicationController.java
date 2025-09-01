@@ -1,6 +1,7 @@
 package com.zhsw.auth.controller;
 
-
+import com.zhsw.auth.mapper.UserMapper;
+import com.zhsw.auth.service.UserService;
 import org.openapitools.api.AuthApi;
 import org.openapitools.model.LoginUserRequest;
 import org.openapitools.model.LoginUserResponse;
@@ -12,6 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthApplicationController implements AuthApi {
 
+    private final UserService userService;
+    private final UserMapper userMapper;
+
+    public AuthApplicationController(UserService userService, UserMapper userMapper) {
+        this.userService = userService;
+        this.userMapper = userMapper;
+    }
+
     @Override
     public ResponseEntity<User> userGET(Integer userId) {
         throw new UnsupportedOperationException("Not implemented yet");
@@ -19,7 +28,11 @@ public class AuthApplicationController implements AuthApi {
 
     @Override
     public ResponseEntity<User> signup(SignUpUserRequest signUpUserRequest) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return userService
+                .registerUser(signUpUserRequest)
+                .map(userMapper::mapToUserResponse)
+                .map(ResponseEntity::ok)
+                .get();
     }
 
     @Override
