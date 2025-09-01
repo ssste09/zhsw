@@ -33,4 +33,16 @@ public class UserService {
         }
     }
 
+    public User login(String email, String password) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email not registered"));
+
+        if (!user.getPassword().matches(password)) {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+
+        return user;
+    }
+
 }
