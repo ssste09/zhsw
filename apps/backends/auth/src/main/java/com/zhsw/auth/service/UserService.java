@@ -1,41 +1,45 @@
 package com.zhsw.auth.service;
 
 import com.zhsw.auth.entity.User;
+import com.zhsw.auth.mapper.UserMapper;
 import com.zhsw.auth.repository.UserRepository;
+import io.vavr.control.Try;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.openapitools.model.SignUpUserRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+@Slf4j
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
 
     @Transactional
-    public User registerUser(User user) {
-
-        if(isUserRegistered(user.getEmail())) {
-            throw new IllegalArgumentException("Email is already registered");
-        }
-        return userRepository.save(user);
+    public Try<User> registerUser(SignUpUserRequest signUpUserRequest) {
+        return Try.of(() -> {
+                    if (isUserRegistered(signUpUserRequest.getEmail())) {
+                        throw new IllegalArgumentException("Email is already registered");
+                    }
+                    return userMapper.mapToSignUpRequestToUser(signUpUserRequest);
+                })
+                .map(userRepository::save);
     }
 
     private boolean isUserRegistered(String email) {
-
-        try {
-            Optional<User> user = userRepository.findByEmail(email);
-            return user.isPresent();
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public User login(String email, String password) {
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository
+                .findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Email not registered"));
 
         if (!user.getPassword().matches(password)) {
@@ -44,5 +48,4 @@ public class UserService {
 
         return user;
     }
-
 }
