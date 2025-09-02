@@ -37,6 +37,10 @@ public class AuthApplicationController implements AuthApi {
 
     @Override
     public ResponseEntity<LoginUserResponse> login(LoginUserRequest loginUserRequest) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return userService
+                .login(loginUserRequest)
+                .map(LoginUserResponse::new)
+                .map(ResponseEntity::ok)
+                .get();
     }
 }
