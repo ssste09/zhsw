@@ -7,6 +7,7 @@ import io.vavr.control.Try;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.model.SignUpUserRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -15,10 +16,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -27,7 +30,9 @@ public class UserService {
                     if (isUserRegistered(signUpUserRequest.getEmail())) {
                         throw new IllegalArgumentException("Email is already registered");
                     }
-                    return userMapper.mapToSignUpRequestToUser(signUpUserRequest);
+                    User user = userMapper.mapToSignUpRequestToUser(signUpUserRequest);
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+                    return user;
                 })
                 .map(userRepository::save);
     }
@@ -42,7 +47,7 @@ public class UserService {
                 .findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Email not registered"));
 
-        if (!user.getPassword().matches(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Incorrect password");
         }
 
