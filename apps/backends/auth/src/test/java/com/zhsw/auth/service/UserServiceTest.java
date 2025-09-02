@@ -3,12 +3,14 @@ package com.zhsw.auth.service;
 import com.zhsw.auth.entity.User;
 import com.zhsw.auth.mapper.UserMapper;
 import com.zhsw.auth.repository.UserRepository;
+import com.zhsw.auth.utils.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openapitools.model.LoginUserRequest;
 import org.openapitools.model.SignUpUserRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -30,6 +32,9 @@ public class UserServiceTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private JwtService jwtService;
 
     @InjectMocks
     private UserService userService;
@@ -66,7 +71,7 @@ public class UserServiceTest {
                 .build();
 
         when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
-        when(userMapper.mapToSignUpRequestToUser(any(SignUpUserRequest.class))).thenReturn(mappedUser);
+        when(userMapper.mapSignUpRequestToUser(any(SignUpUserRequest.class))).thenReturn(mappedUser);
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword123");
         when(userRepository.save(any()))
                 .thenReturn(User.builder().email("test@email.com").build());
@@ -76,5 +81,43 @@ public class UserServiceTest {
         assertTrue(result.isSuccess());
         assertEquals("test@email.com", result.get().getEmail());
         assertNotEquals("plainPassword123", result.get().getPassword());
+    }
+
+    @Test
+    void shouldGenerateAndReturnToken() {
+        when(userRepository.findByEmail(any()))
+                .thenReturn(Optional.of(
+                        User.builder().email("test@gmail.com").userId(4L).build()));
+        when(passwordEncoder.matches(any(), any())).thenReturn(true);
+        when(jwtService.generateToken(any(), any())).thenReturn("token");
+
+        var result = userService.login(new LoginUserRequest("test@gmail.com", "ciaociaociao"));
+
+        assertEquals("token", result.get());
+    }
+
+    @Test
+    void shouldThrowWhenUserIsNotRegistered() {
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        var result = userService.login(new LoginUserRequest("test@gmail.com", "ciaociaociao"));
+
+        assertTrue(result.isFailure());
+        assertTrue(result.getCause() instanceof IllegalArgumentException);
+        assertEquals("Email not registered", result.getCause().getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenPasswordIsIncorrect() {
+        when(userRepository.findByEmail(any()))
+                .thenReturn(Optional.of(
+                        User.builder().email("test@gmail.com").userId(4L).build()));
+        when(passwordEncoder.matches(any(), any())).thenReturn(false);
+
+        var result = userService.login(new LoginUserRequest("test@gmail.com", "ciaociaociao"));
+
+        assertTrue(result.isFailure());
+        assertTrue(result.getCause() instanceof IllegalArgumentException);
+        assertEquals("Incorrect password", result.getCause().getMessage());
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 @Data
 public class UserMapper {
-    public User mapToSignUpRequestToUser(SignUpUserRequest request) {
+    public User mapSignUpRequestToUser(SignUpUserRequest request) {
         var user = User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
