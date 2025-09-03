@@ -3,7 +3,7 @@ TOOLS_DIR := tools
 GENERATOR_VERSION := 7.7.0
 GENERATOR_JAR := $(TOOLS_DIR)/openapi-generator-cli-$(GENERATOR_VERSION).jar
 
-SPECS_DIR=../../../libs/specs
+SPECS_DIR=../../../libs/specs/auth
 GENERATOR_JAVA=target
 
 # Prefer java -jar; fall back to binary if present
