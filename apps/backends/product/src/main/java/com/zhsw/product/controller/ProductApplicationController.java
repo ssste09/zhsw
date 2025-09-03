@@ -11,12 +11,12 @@ import java.util.List;
 public class ProductApplicationController implements ProductsApi {
 
     @Override
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<Product> getProductById(Integer productId) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public ResponseEntity<Product> getProductById(Integer productId) {
+    public ResponseEntity<List<Product>> getAllProducts() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }
