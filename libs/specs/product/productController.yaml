@@ -15,6 +15,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: returns the current product's details
@@ -82,14 +83,12 @@ components:
           enum: [ SNEAKERS, BOOTS, SANDALS, SLIPPERS, HEELS ]
         price:
           type: number
-          format: double
+          format: decimal
         discount:
           type: number
-          format: double
-          example: 10.0
+          format: decimal
         discountedPrice:
           type: number
-          format: double
-          example: 89.99
+          format: decimal
         stockQuantity:
           type: integer
