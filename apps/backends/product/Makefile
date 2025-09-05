@@ -36,13 +36,13 @@ generate_specs: $(GENERATOR_JAR)
 	done
 
 run_tests: generate_specs
-	@echo "Starting auth tests"
+	@echo "Starting product tests"
 	./mvnw test -Dgroups=unit
 run_tests_int: generate_specs
-	@echo "Starting auth tests"
+	@echo "Starting product tests"
 	./mvnw verify -Dgroups=integration
 run_tests_e2e: generate_specs
-	@echo "Starting auth tests"
+	@echo "Starting product tests"
 	./mvnw verify -Dgroups=e2e
 
 run_server: generate_specs

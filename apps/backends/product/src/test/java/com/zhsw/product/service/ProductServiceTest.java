@@ -3,6 +3,9 @@ package com.zhsw.product.service;
 import com.zhsw.product.entity.Product;
 import com.zhsw.product.mapper.ProductMapper;
 import com.zhsw.product.repository.ProductRepository;
+import com.zhsw.product.utils.Category;
+import com.zhsw.product.utils.Gender;
+import com.zhsw.product.utils.Size;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -47,10 +50,10 @@ public class ProductServiceTest {
                 .brand("Nike")
                 .price(BigDecimal.valueOf(150))
                 .stockQuantity(10)
-                .gender("MEN")
-                .size("EU_42")
+                .gender(Gender.MEN)
+                .size(Size.EU_42)
                 .colour("Red")
-                .category("SNEAKERS")
+                .category(Category.SNEAKERS)
                 .images(List.of("https://example.com/images/jordan1.png"))
                 .build();
 
