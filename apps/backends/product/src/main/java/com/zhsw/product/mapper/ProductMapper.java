@@ -1,5 +1,8 @@
 package com.zhsw.product.mapper;
 
+import com.zhsw.product.utils.Category;
+import com.zhsw.product.utils.Gender;
+import com.zhsw.product.utils.Size;
 import lombok.Data;
 import org.openapitools.model.Product;
 import org.springframework.stereotype.Component;
@@ -38,9 +41,9 @@ public class ProductMapper {
         return products.stream().map(this::mapToProductResponse).toList();
     }
 
-    public Product.GenderEnum mapToResponseGenderEnum(String gender) {
+    public Product.GenderEnum mapToResponseGenderEnum(Gender gender) {
         if (gender == null) return null;
-        return switch (gender.toUpperCase()) {
+        return switch (gender.name().toUpperCase()) {
             case "WOMAN", "WOMEN" -> Product.GenderEnum.WOMEN;
             case "MEN" -> Product.GenderEnum.MEN;
             case "KIDS" -> Product.GenderEnum.KIDS;
@@ -48,13 +51,13 @@ public class ProductMapper {
         };
     }
 
-    public Product.SizeEnum mapToResponseSizeEnum(String size) {
+    public Product.SizeEnum mapToResponseSizeEnum(Size size) {
 
-        return Product.SizeEnum.valueOf(size);
+        return Product.SizeEnum.valueOf(size.name());
     }
 
-    public Product.CategoryEnum mapToResponseCategoryEnum(String category) {
+    public Product.CategoryEnum mapToResponseCategoryEnum(Category category) {
 
-        return Product.CategoryEnum.valueOf(category);
+        return Product.CategoryEnum.valueOf(category.name());
     }
 }

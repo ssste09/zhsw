@@ -1,7 +1,11 @@
 package com.zhsw.product.entity;
 
+import com.zhsw.product.utils.Category;
+import com.zhsw.product.utils.Gender;
+import com.zhsw.product.utils.Size;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -36,22 +40,22 @@ public class Product {
     @Column(name = "image_url")
     private List<String> images;
 
-    @NotBlank(message = "Size is required")
+    @NotNull(message = "Size is required")
     @Column(name = "size", nullable = false)
     @Enumerated(EnumType.STRING)
-    private String size;
+    private Size size;
 
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
-    private String gender;
+    private Gender gender;
 
     @Column(name = "colour")
     private String colour;
 
-    @NotBlank(message = "Category is required")
+    @NotNull(message = "Category is required")
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
-    private String category;
+    private Category category;
 
     @NotBlank(message = "Price is required")
     @Column(name = "price", nullable = false)
