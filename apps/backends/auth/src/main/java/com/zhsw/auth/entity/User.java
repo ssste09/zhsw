@@ -1,6 +1,7 @@
 package com.zhsw.auth.entity;
 
 import com.zhsw.auth.utils.Gender;
+import com.zhsw.auth.utils.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -57,4 +58,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

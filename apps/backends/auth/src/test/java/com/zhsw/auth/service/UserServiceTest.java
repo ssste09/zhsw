@@ -4,6 +4,7 @@ import com.zhsw.auth.entity.User;
 import com.zhsw.auth.mapper.UserMapper;
 import com.zhsw.auth.repository.UserRepository;
 import com.zhsw.auth.utils.JwtService;
+import com.zhsw.auth.utils.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -86,10 +87,13 @@ public class UserServiceTest {
     @Test
     void shouldGenerateAndReturnToken() {
         when(userRepository.findByEmail(any()))
-                .thenReturn(Optional.of(
-                        User.builder().email("test@gmail.com").userId(4L).build()));
+                .thenReturn(Optional.of(User.builder()
+                        .email("test@gmail.com")
+                        .userId(4L)
+                        .role(Role.ROLE_ADMIN)
+                        .build()));
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
-        when(jwtService.generateToken(any(), any())).thenReturn("token");
+        when(jwtService.generateToken(any(), any(), any())).thenReturn("token");
 
         var result = userService.login(new LoginUserRequest("test@gmail.com", "ciaociaociao"));
 

@@ -75,6 +75,7 @@ components:
         - phone
         - birthDate
         - addresses
+        - role
       properties:
         id:
           type: integer
@@ -98,7 +99,10 @@ components:
           format: date
         addresses:
           type: array
-          items: {$ref: '#/components/schemas/Address'}
+          items: { $ref: '#/components/schemas/Address' }
+        role:
+          type: string
+          enum: [ USER, ADMIN ]
     SignUpUserRequest:
       allOf:
         - $ref: '#/components/schemas/User'  # Reuse the User schema
