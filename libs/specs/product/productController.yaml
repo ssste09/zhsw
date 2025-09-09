@@ -38,6 +38,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
+    post:
+      tags:
+        - productController
+      summary: Some summary
+      operationId: addProduct
+      requestBody:
+        description: "Product details"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProductRequest'
+      responses:
+        '200':
+          description: returns new product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
 components:
   schemas:
     Product:
@@ -92,3 +112,7 @@ components:
           format: decimal
         stockQuantity:
           type: integer
+    AddProductRequest:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+        - type: object

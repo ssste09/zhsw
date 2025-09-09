@@ -12,14 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openapitools.model.AddProductRequest;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Tag("integration")
@@ -113,5 +115,102 @@ public class ProductServiceTest {
         assertEquals(2, result.get().size());
         assertEquals("Air Jordan 1", result.get().get(0).getName());
         assertEquals("Yeezy Boost", result.get().get(1).getName());
+    }
+
+    @Test
+    void shouldSaveAndReturnProduct() {
+        var request = new AddProductRequest();
+        request.setName("Sneaker");
+        request.setBrand("Nike");
+        request.setDescription("Running shoe");
+        request.setSize(AddProductRequest.SizeEnum._40); // OpenAPI enum
+        request.setGender(AddProductRequest.GenderEnum.MEN);
+        request.setColour("Blue");
+        request.setCategory(AddProductRequest.CategoryEnum.SNEAKERS);
+        request.setPrice(BigDecimal.valueOf(100));
+        request.setDiscount(BigDecimal.valueOf(10));
+        request.setDiscountedPrice(BigDecimal.valueOf(90));
+        request.setStockQuantity(5);
+        request.setImageUrl(List.of(URI.create("https://example.com/images/sneaker.png")));
+
+        // Mocking repository: no existing product
+        when(productRepository.findExistingProduct(
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        any(Size.class),
+                        any(Gender.class),
+                        anyString(),
+                        any(Category.class)))
+                .thenReturn(Optional.empty());
+
+        // Mocking mapper and save
+        Product mappedProduct = Product.builder()
+                .name(request.getName())
+                .brand(request.getBrand())
+                .description(request.getDescription())
+                .size(Size.fromOpenApi(request.getSize().name()))
+                .gender(Gender.valueOf(request.getGender().name()))
+                .colour(request.getColour())
+                .category(Category.valueOf(request.getCategory().name()))
+                .price(request.getPrice())
+                .discount(request.getDiscount())
+                .discountedPrice(request.getDiscountedPrice())
+                .stockQuantity(request.getStockQuantity())
+                .images(request.getImageUrl().stream().map(URI::toString).toList())
+                .build();
+
+        when(productMapper.mapProductRequestToProduct(any(AddProductRequest.class)))
+                .thenReturn(mappedProduct);
+        when(productRepository.save(any())).thenReturn(mappedProduct);
+
+        var result = productService.addProduct(request);
+
+        assertTrue(result.isSuccess());
+        assertEquals("Sneaker", result.get().getName());
+        assertEquals(Size.fromOpenApi("_40"), result.get().getSize());
+    }
+
+    @Test
+    void shouldReturnProductWhenProductExists() {
+        AddProductRequest req = new AddProductRequest();
+        req.setName("Sneaker");
+        req.setBrand("Nike");
+        req.setDescription("Running shoe");
+        req.setSize(AddProductRequest.SizeEnum._40);
+        req.setGender(AddProductRequest.GenderEnum.MEN);
+        req.setColour("Blue");
+        req.setCategory(AddProductRequest.CategoryEnum.SNEAKERS);
+        req.setStockQuantity(5);
+
+        Product existingProduct = Product.builder()
+                .name(req.getName())
+                .brand(req.getBrand())
+                .description(req.getDescription())
+                .size(Size.fromOpenApi(req.getSize().name()))
+                .gender(Gender.valueOf(req.getGender().name()))
+                .colour(req.getColour())
+                .category(Category.valueOf(req.getCategory().name()))
+                .stockQuantity(10)
+                .build();
+
+        when(productRepository.findExistingProduct(
+                        eq("Sneaker"),
+                        eq("Nike"),
+                        eq("Running shoe"),
+                        eq(Size.fromOpenApi(req.getSize().name())),
+                        eq(Gender.valueOf(req.getGender().name())),
+                        eq("Blue"),
+                        eq(Category.valueOf(req.getCategory().name()))))
+                .thenReturn(Optional.of(existingProduct));
+
+        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Product result = productService.addProduct(req).get();
+
+        assertNotNull(result);
+        assertEquals(15, result.getStockQuantity());
+        assertSame(existingProduct, result);
+        verify(productRepository).save(existingProduct);
     }
 }

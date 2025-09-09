@@ -46,5 +46,5 @@ run_tests_e2e: generate_specs
 	./mvnw verify -Dgroups=e2e
 
 run_server: generate_specs
-	@echo "🚀 Starting Auth server..."
+	@echo "🚀 Starting Product server..."
 	./mvnw spring-boot:run -DskipTests

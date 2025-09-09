@@ -4,6 +4,7 @@ import com.zhsw.product.utils.Category;
 import com.zhsw.product.utils.Gender;
 import com.zhsw.product.utils.Size;
 import lombok.Data;
+import org.openapitools.model.AddProductRequest;
 import org.openapitools.model.Product;
 import org.springframework.stereotype.Component;
 
@@ -59,5 +60,28 @@ public class ProductMapper {
     public Product.CategoryEnum mapToResponseCategoryEnum(Category category) {
 
         return Product.CategoryEnum.valueOf(category.name());
+    }
+
+    public com.zhsw.product.entity.Product mapProductRequestToProduct(AddProductRequest request) {
+
+        return com.zhsw.product.entity.Product.builder()
+                .brand(request.getBrand())
+                .colour(request.getColour())
+                .discountedPrice(request.getDiscountedPrice())
+                .price(request.getPrice())
+                .name(request.getName())
+                .category(Category.valueOf(request.getCategory().name()))
+                .description(request.getDescription())
+                .stockQuantity(request.getStockQuantity())
+                .images(
+                        request.getImageUrl() != null
+                                ? request.getImageUrl().stream()
+                                        .map(URI::toString)
+                                        .toList()
+                                : List.of())
+                .size(Size.valueOf(request.getSize().name()))
+                .gender(Gender.valueOf(request.getGender().name()))
+                .discount(request.getDiscount())
+                .build();
     }
 }

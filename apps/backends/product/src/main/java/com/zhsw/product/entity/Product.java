@@ -34,7 +34,6 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @NotBlank(message = "Images are required")
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
