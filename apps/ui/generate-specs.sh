@@ -10,13 +10,16 @@ GENERATOR_JAR="${TOOLS_DIR}/openapi-generator-cli-${GENERATOR_VERSION}.jar"
 
 CLIENT_GENERATOR="typescript-fetch"  # or: typescript-axios
 CLIENT_PROPS="supportsES6=true,typescriptThreePlus=true,useSingleRequestParameter=false"
-UI_PKGJSON="package.json"
-
 
 UI_TSCONFIG="tsconfig.json"
+UI_PKGJSON="package.json"
+
+# ---- Toggle: 0 = types-only (default), 1 = runtime SDK with JS output ----
+RUNTIME_SDK="${RUNTIME_SDK:-0}"
 
 echo "📂 Specs root: $SPECS_ROOT"
 echo "📦 Packages dir: $PACKAGES_DIR"
+echo "⚙️  Mode: $([ "$RUNTIME_SDK" = "1" ] && echo 'Runtime SDK (JS + .d.ts)' || echo 'Types-only (.d.ts)')"
 
 # --- Ensure generator jar ---
 if [ ! -f "$GENERATOR_JAR" ]; then
@@ -41,7 +44,7 @@ if [ -z "${SERVICES:-}" ]; then
 fi
 echo "🔎 Services: $SERVICES"
 
-# --- Generate each SDK (types-only) ---
+# --- Generate each SDK ---
 for svc in $SERVICES; do
   echo ""
   echo "==> Service: $svc"
@@ -57,8 +60,33 @@ for svc in $SERVICES; do
 
   mkdir -p "$SRC_DIR"
 
-  # package.json — types-only export
-  cat > "$PKG_DIR/package.json" <<JSON
+  # ---------- package.json ----------
+  if [ "$RUNTIME_SDK" = "1" ]; then
+    # Runtime SDK: export built JS
+    cat > "$PKG_DIR/package.json" <<JSON
+{
+  "name": "@your-scope/${svc}-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+
+  "types": "dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rimraf dist",
+    "prepack": "npm run build"
+  },
+  "devDependencies": { "typescript": "^5.4.0", "rimraf": "^6.0.0" }
+}
+JSON
+  else
+    # Types-only: expose only .d.ts, no runtime
+    cat > "$PKG_DIR/package.json" <<JSON
 {
   "name": "@your-scope/${svc}-client",
   "version": "0.0.0",
@@ -80,8 +108,9 @@ for svc in $SERVICES; do
   "devDependencies": { "typescript": "^5.4.0", "rimraf": "^6.0.0" }
 }
 JSON
+  fi
 
-  # tsconfig.json — modern resolver, **no files** so TS server won't load src
+  # ---------- tsconfig.json (root; keep project empty to avoid TS server loading src) ----------
   cat > "$PKG_DIR/tsconfig.json" <<JSON
 {
   "compilerOptions": {
@@ -94,11 +123,34 @@ JSON
     "moduleResolution": "Bundler",
     "lib": ["ES2020", "DOM"]
   },
+  "files": [],
+  "include": []
 }
 JSON
 
-  # build emits declarations ONLY — **no declarationMap/sourceMap** (prevents jumps to src)
-  cat > "$PKG_DIR/tsconfig.build.json" <<JSON
+  # ---------- tsconfig.build.json ----------
+  if [ "$RUNTIME_SDK" = "1" ]; then
+    # Emit JS + d.ts
+    cat > "$PKG_DIR/tsconfig.build.json" <<JSON
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "outDir": "dist",
+    "module": "ESNext",
+    "target": "ES2020",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": ["src"]
+}
+JSON
+  else
+    # Emit .d.ts only
+    cat > "$PKG_DIR/tsconfig.build.json" <<JSON
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
@@ -111,23 +163,39 @@ JSON
   "include": ["src"]
 }
 JSON
+  fi
 
-  # index.ts (type re-exports → dist/index.d.ts)
-  cat > "$SRC_DIR/index.ts" <<'TS'
+  # ---------- index.ts (re-exports) ----------
+  if [ "$RUNTIME_SDK" = "1" ]; then
+    # Re-export runtime too so consumers can import Configuration, etc.
+    cat > "$SRC_DIR/index.ts" <<'TS'
+export * from "./generated/client/apis";
+export * from "./generated/client/models";
+export * from "./generated/client/runtime";
+TS
+  else
+    cat > "$SRC_DIR/index.ts" <<'TS'
 export * from "./generated/client/apis";
 export * from "./generated/client/models";
 TS
+  fi
 
-  # runtime stub
-  cat > "$PKG_DIR/empty.js" <<'JS'
+  # runtime stub only for types-only mode
+  if [ "$RUNTIME_SDK" != "1" ]; then
+    cat > "$PKG_DIR/empty.js" <<'JS'
 // This package is type-only. No runtime exports.
 JS
+  else
+    rm -f "$PKG_DIR/empty.js" 2>/dev/null || true
+  fi
 
-  # readme
+  # README
   cat > "$PKG_DIR/README.md" <<MD
 # ${svc}-client
 
-Type-only SDK generated from OpenAPI. Exposes \`.d.ts\` only (no runtime).
+${RUNTIME_SDK:+Runtime }SDK generated from OpenAPI.
+- ${RUNTIME_SDK:+Ships JS runtime and }TypeScript declarations in \`dist/\`.
+- Entry: \`@your-scope/${svc}-client\`.
 MD
 
   echo "   🧹 Cleaning old generated client"
@@ -143,7 +211,13 @@ MD
     --additional-properties "$CLIENT_PROPS"
 done
 
-# --- Patch UI tsconfig: prefer dist, exclude packages/*/src ---
+# --- Build all clients ---
+for svc in $SERVICES; do
+  echo "🔧 Building @your-scope/${svc}-client"
+  (cd "$PACKAGES_DIR/${svc}-client" && (npm ci --silent || npm install --silent) && npm run build)
+done
+
+# --- Patch UI tsconfig: prefer dist, exclude packages/*/src (works for both modes) ---
 python3 - "$UI_TSCONFIG" <<'PY'
 import json, os, sys, glob
 fn = sys.argv[1]
@@ -157,24 +231,21 @@ co.setdefault("moduleResolution","Bundler")
 co.setdefault("jsx","preserve")
 co.setdefault("strict", True)
 co.setdefault("baseUrl",".")
-
 paths = co.setdefault("paths", {})
 for pkgjson in glob.glob("packages/*-client/package.json"):
     meta = json.load(open(pkgjson))
     name = meta["name"]
     pkgdir = os.path.dirname(pkgjson)
     paths[name] = [f"{pkgdir}/dist"]
-
 data["include"] = ["src/**/*.ts","src/**/*.tsx","next-env.d.ts"]
 ex = set(data.get("exclude", []))
 ex.update({"node_modules","packages/*/src","packages/*/generated"})
 data["exclude"] = sorted(ex)
-
 with open(fn,"w") as f: json.dump(data,f,indent=2)
 print(f"🛠  Patched {fn}: include src/*, exclude packages/*/src, paths→dist")
 PY
 
-# --- Add each client as a dependency in ui/package.json ---
+# --- Add each client as a dependency in ui/package.json (version 0.0.0) ---
 python3 - "$UI_PKGJSON" <<'PY'
 import json, os, sys, glob
 fn = sys.argv[1]
@@ -182,20 +253,31 @@ if not os.path.exists(fn):
     raise SystemExit("ui/package.json not found")
 with open(fn) as f: data = json.load(f)
 deps = data.setdefault("dependencies", {})
-# ensure workspaces field exists and includes packages/*
 ws = data.setdefault("workspaces", [])
 if isinstance(ws, dict): ws = ws.get("packages", ws)
 if "." not in ws: ws.append(".")
 if "packages/*" not in ws: ws.append("packages/*")
 data["workspaces"] = ws
-# add each service client at version 0.0.0
 for pkgjson in glob.glob("packages/*-client/package.json"):
     with open(pkgjson) as f: meta = json.load(f)
-    name = meta["name"]
-    deps[name] = "0.0.0"
+    deps[meta["name"]] = "0.0.0"
 with open(fn,"w") as f: json.dump(data,f,indent=2)
 print(f"🛠  Added client deps to {fn}")
 PY
+
+echo ""
+echo "✅ Generation complete."
+echo "Next:"
+echo "  npm install"
+echo "  # Import from the package name only:"
+if [ "$RUNTIME_SDK" = "1" ]; then
+  echo "  #   import { AuthControllerApi, Configuration, type LoginUserRequest } from '@your-scope/<service>-client';"
+  echo "  #   const api = new AuthControllerApi(new Configuration({ basePath: process.env.NEXT_PUBLIC_AUTH_URL }));"
+else
+  echo "  #   import type { LoginUserRequest } from '@your-scope/<service>-client';"
+  echo "  #   // call fetch/SWR using those types"
+fi
+
 
 echo ""
 echo "✅ Generation complete."
