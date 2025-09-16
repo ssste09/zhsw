@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openapitools.model.AddProductRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -171,8 +172,7 @@ public class ProductServiceTest {
         assertEquals(Size.fromOpenApi("_40"), result.get().getSize());
     }
 
-    @Test
-    void shouldReturnProductWhenProductExists() {
+    private AddProductRequest createValidRequest() {
         AddProductRequest req = new AddProductRequest();
         req.setName("Sneaker");
         req.setBrand("Nike");
@@ -182,6 +182,42 @@ public class ProductServiceTest {
         req.setColour("Blue");
         req.setCategory(AddProductRequest.CategoryEnum.SNEAKERS);
         req.setStockQuantity(5);
+        return req;
+    }
+
+    @Test
+    @WithMockUser(
+            username = "admin@example.com",
+            roles = {"ADMIN"})
+    void shouldAllowAccessForAdminRole() {
+
+        AddProductRequest request = createValidRequest();
+
+        Product mappedProduct = Product.builder()
+                .name(request.getName())
+                .brand(request.getBrand())
+                .description(request.getDescription())
+                .size(Size.fromOpenApi(request.getSize().name()))
+                .gender(Gender.valueOf(request.getGender().name()))
+                .colour(request.getColour())
+                .category(Category.valueOf(request.getCategory().name()))
+                .stockQuantity(request.getStockQuantity())
+                .build();
+
+        when(productMapper.mapProductRequestToProduct(request)).thenReturn(mappedProduct);
+        when(productRepository.save(mappedProduct)).thenReturn(mappedProduct);
+
+        var result = productService.addProduct(request);
+
+        assertTrue(result.isSuccess());
+        assertEquals("Sneaker", result.get().getName());
+    }
+
+    
+
+    @Test
+    void shouldReturnProductWhenProductExists() {
+        AddProductRequest req = createValidRequest();
 
         Product existingProduct = Product.builder()
                 .name(req.getName())

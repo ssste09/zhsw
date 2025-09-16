@@ -90,7 +90,7 @@ public class UserServiceTest {
                 .thenReturn(Optional.of(User.builder()
                         .email("test@gmail.com")
                         .userId(4L)
-                        .role(Role.ROLE_ADMIN)
+                        .role(Role.ADMIN)
                         .build()));
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
         when(jwtService.generateToken(any(), any(), any())).thenReturn("token");
