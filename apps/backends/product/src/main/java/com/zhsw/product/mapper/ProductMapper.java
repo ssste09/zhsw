@@ -54,7 +54,7 @@ public class ProductMapper {
 
     public Product.SizeEnum mapToResponseSizeEnum(Size size) {
 
-        return Product.SizeEnum.valueOf(size.name());
+        return Product.SizeEnum.valueOf(size.name().replace("EU", ""));
     }
 
     public Product.CategoryEnum mapToResponseCategoryEnum(Category category) {
@@ -79,7 +79,7 @@ public class ProductMapper {
                                         .map(URI::toString)
                                         .toList()
                                 : List.of())
-                .size(Size.valueOf(request.getSize().name()))
+                .size(Size.fromOpenApi(request.getSize().name()))
                 .gender(Gender.valueOf(request.getGender().name()))
                 .discount(request.getDiscount())
                 .build();

@@ -6,8 +6,10 @@ import com.zhsw.product.utils.Size;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 @Entity
 @Table(name = "product")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Product {
 
@@ -44,7 +48,7 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Size size;
 
-    @Column(name = "gender")
+    @Column(name = "gender", length = 16)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -56,7 +60,6 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @NotBlank(message = "Price is required")
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
@@ -66,7 +69,6 @@ public class Product {
     @Column(name = "discounted_price")
     private BigDecimal discountedPrice;
 
-    @NotBlank(message = "Stock quantity is required")
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
 }

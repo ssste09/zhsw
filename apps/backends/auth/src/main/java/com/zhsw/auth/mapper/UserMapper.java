@@ -3,6 +3,7 @@ package com.zhsw.auth.mapper;
 import com.zhsw.auth.entity.Address;
 import com.zhsw.auth.entity.User;
 import com.zhsw.auth.utils.Gender;
+import com.zhsw.auth.utils.Role;
 import lombok.Data;
 import org.openapitools.model.SignUpUserRequest;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ public class UserMapper {
     public User mapSignUpRequestToUser(SignUpUserRequest request) {
         var user = User.builder()
                 .email(request.getEmail())
+                .role(Role.valueOf(request.getRole().name()))
                 .name(request.getName())
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhone())
