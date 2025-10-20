@@ -74,8 +74,7 @@ components:
         - email
         - phone
         - birthDate
-        - addresses
-        - role
+        - address
       properties:
         id:
           type: integer
@@ -97,12 +96,10 @@ components:
         birthDate:
           type: string
           format: date
-        addresses:
-          type: array
-          items: { $ref: '#/components/schemas/Address' }
-        role:
-          type: string
-          enum: [ USER, ADMIN ]
+        address:
+          type: object
+          $ref: '#/components/schemas/Address'
+
     SignUpUserRequest:
       allOf:
         - $ref: '#/components/schemas/User'  # Reuse the User schema
@@ -135,6 +132,7 @@ components:
       type: object
       required:
         - street
+        - streetNumber
         - city
         - postalCode
         - country
@@ -142,11 +140,11 @@ components:
         id:
           type: integer
           format: int64
-        isDefault:
-          type: boolean
-          default: false
         street:
           type: string
+        streetNumber:
+          type: integer
+          format: int64
         city:
           type: string
         postalCode:

@@ -22,8 +22,12 @@ public class AuthApplicationController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<User> userGET(Integer userId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ResponseEntity<LoginUserResponse> login(LoginUserRequest loginUserRequest) {
+        return userService
+                .login(loginUserRequest)
+                .map(LoginUserResponse::new)
+                .map(ResponseEntity::ok)
+                .get();
     }
 
     @Override
@@ -36,11 +40,7 @@ public class AuthApplicationController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<LoginUserResponse> login(LoginUserRequest loginUserRequest) {
-        return userService
-                .login(loginUserRequest)
-                .map(LoginUserResponse::new)
-                .map(ResponseEntity::ok)
-                .get();
+    public ResponseEntity<User> userGET(Integer userId) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

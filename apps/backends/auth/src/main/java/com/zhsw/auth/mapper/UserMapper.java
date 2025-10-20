@@ -7,8 +7,6 @@ import lombok.Data;
 import org.openapitools.model.SignUpUserRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @Data
 public class UserMapper {
@@ -22,34 +20,32 @@ public class UserMapper {
                 .password(request.getPassword())
                 .birthDate(request.getBirthDate())
                 .build();
-        List<Address> addresses = mapToAddressEntity(request.getAddresses(), user);
-        user.setAddresses(addresses);
+        Address address = mapToAddressEntity(request.getAddress(), user);
+        user.setAddress(address);
 
         return user;
     }
 
-    public List<Address> mapToAddressEntity(List<org.openapitools.model.Address> addressesRequest, User user) {
+    public Address mapToAddressEntity(org.openapitools.model.Address addressesRequest, User user) {
 
-        return addressesRequest.stream()
-                .map(reqAddress -> Address.builder()
-                        .address(reqAddress.getStreet())
-                        .city(reqAddress.getCity())
-                        .postalCode(reqAddress.getPostalCode())
-                        .user(user)
-                        .country(reqAddress.getCountry())
-                        .build())
-                .toList();
+        return new Address(
+                addressesRequest.getId(),
+                addressesRequest.getStreet(),
+                addressesRequest.getStreetNumber(),
+                addressesRequest.getPostalCode(),
+                addressesRequest.getCity(),
+                addressesRequest.getCountry(),
+                user);
     }
 
-    public List<org.openapitools.model.Address> mapToAddressResponse(List<Address> addresses) {
-        return addresses.stream()
-                .map(address -> new org.openapitools.model.Address()
-                        .id(address.getAddressId())
-                        .city(address.getCity())
-                        .country(address.getCountry())
-                        .street(address.getAddress())
-                        .postalCode(address.getPostalCode()))
-                .toList();
+    public org.openapitools.model.Address mapToAddressResponse(Address address) {
+        return new org.openapitools.model.Address()
+                .id(address.getAddressId())
+                .city(address.getCity())
+                .country(address.getCountry())
+                .street(address.getAddress())
+                .postalCode(address.getPostalCode())
+                .streetNumber(address.getStreetNumber());
     }
 
     public Gender mapToEntityGenderEnum(SignUpUserRequest.GenderEnum genderReq) {
@@ -75,6 +71,6 @@ public class UserMapper {
                 .lastName(user.getLastName())
                 .birthDate(user.getBirthDate())
                 .phone(user.getPhoneNumber())
-                .addresses(mapToAddressResponse(user.getAddresses()));
+                .address(mapToAddressResponse(user.getAddress()));
     }
 }
