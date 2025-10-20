@@ -1,0 +1,73 @@
+openapi: 3.0.1
+info:
+  title: API
+  version: 1.0.0
+paths:
+  /weather/{cityName}:
+    get:
+      tags:
+        - weatherApiController
+      summary: Some summary
+      operationId: weatherGET
+      parameters:
+        - name: cityName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: returns the weather details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Weather'
+
+components:
+  schemas:
+    Weather:
+      type: object
+      required:
+        - elevation
+        - hourly
+      properties:
+        elevation:
+          type: number
+          format: double
+          example: 3.44
+        hourly:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hourly'
+    Hourly:
+      type: object
+      required:
+        - time
+        - temp
+        - humidity
+        - wind
+        - precipitation
+      properties:
+
+        time:
+          type: string
+          format: date-time
+          example: 2025-10-20T00:00
+        temp:
+          type: number
+          format: float
+          example: 10.6
+        humidity:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          example: 50.0
+        wind:
+          type: number
+          format: float
+          example: 10.6
+        precipitation:
+          type: number
+          format: float
+          example: 10.6

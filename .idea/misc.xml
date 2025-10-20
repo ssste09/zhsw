@@ -9,6 +9,7 @@
       <list>
         <option value="$PROJECT_DIR$/apps/backends/auth/pom.xml" />
         <option value="$PROJECT_DIR$/apps/backends/product/pom.xml" />
+        <option value="$PROJECT_DIR$/apps/backends/apis/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

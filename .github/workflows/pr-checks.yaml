@@ -13,6 +13,7 @@ jobs:
       matrix:
         backend:
           - auth
+          - apis
           # add more backend names here as you create them
           # e.g. - payments
           #       - users
