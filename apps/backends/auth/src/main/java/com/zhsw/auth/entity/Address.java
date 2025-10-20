@@ -23,6 +23,10 @@ public class Address {
     @Column(nullable = false, name = "address")
     private String address;
 
+    @NotBlank(message = "Street number is required")
+    @Column(nullable = false, name = "street_number")
+    private Long streetNumber;
+
     @NotBlank(message = "Postal code is required")
     @Column(nullable = false, name = "postal_code")
     private String postalCode;
@@ -31,11 +35,9 @@ public class Address {
     @Column(nullable = false, name = "city")
     private String city;
 
-    @NotBlank(message = "Country is required")
-    @Column(nullable = false, name = "country")
-    private String country;
+    private String country = "Switzerland";
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

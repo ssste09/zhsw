@@ -59,10 +59,7 @@ public class UserService {
                 throw new IllegalArgumentException("Incorrect password");
             }
 
-            return jwtService.generateToken(
-                    user.getUserId(),
-                    user.getEmail(),
-                    user.getRole());
+            return jwtService.generateToken(user.getUserId(), user.getEmail());
         });
     }
 }

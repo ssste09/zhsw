@@ -1,7 +1,6 @@
 package com.zhsw.auth.entity;
 
 import com.zhsw.auth.utils.Gender;
-import com.zhsw.auth.utils.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -56,9 +54,6 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;
 }
