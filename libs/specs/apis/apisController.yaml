@@ -48,26 +48,19 @@ components:
         - wind
         - precipitation
       properties:
-
         time:
           type: string
-          format: date-time
-          example: 2025-10-20T00:00
         temp:
           type: number
-          format: float
+          format: double
           example: 10.6
         humidity:
-          type: number
-          format: float
-          minimum: 0
-          maximum: 100
-          example: 50.0
+          type: integer
         wind:
           type: number
-          format: float
+          format: double
           example: 10.6
         precipitation:
           type: number
-          format: float
+          format: double
           example: 10.6

@@ -1,5 +1,6 @@
 # Maven build
 apps/backends/auth/target
+apps/backends/apis/target
 
 # IDEs
 .idea/
