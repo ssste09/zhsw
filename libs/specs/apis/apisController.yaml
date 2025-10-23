@@ -22,6 +22,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Weather'
+  /events/{location}:
+    get:
+      tags:
+        - eventsApiController
+      summary: Some summary
+      operationId: eventsGET
+      parameters:
+        - name: location
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: returns the events details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Events'
 
 components:
   schemas:
@@ -64,3 +83,31 @@ components:
           type: number
           format: double
           example: 10.6
+    Events:
+      type: object
+      required:
+        - eventsList
+      properties:
+        eventsList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+    Event:
+      type: object
+      required:
+        - title
+        - date
+        - address
+        - locationImageUrl
+        - description
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+        address:
+          type: string
+        locationImageUrl:
+          type: string
+        description:
+          type: string
