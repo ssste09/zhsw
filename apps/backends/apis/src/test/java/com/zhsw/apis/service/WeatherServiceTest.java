@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -16,8 +17,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Tag("integration")
 public class WeatherServiceTest {
+    @InjectMocks
     static MockWebServer geo = new MockWebServer();
+
+    @InjectMocks
     static MockWebServer forecast = new MockWebServer();
+
+    @Autowired
+    WeatherService service;
 
     @BeforeAll
     static void start() throws Exception {
@@ -36,9 +43,6 @@ public class WeatherServiceTest {
         r.add("geo.open.meteo.base.url", () -> geo.url("/").toString());
         r.add("forecast.open.meteo.base.url", () -> forecast.url("/").toString());
     }
-
-    @Autowired
-    WeatherService service;
 
     @Test
     void getCoordinates_happyPath() throws Exception {
