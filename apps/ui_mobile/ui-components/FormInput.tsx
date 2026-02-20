@@ -42,6 +42,7 @@ interface FormInputProps<T extends FieldValues> {
   setCallingCode?: (ncc: string[]) => void;
   placeholder?: string;
   additionalProps?: any;
+  testID?: string;
 }
 
 const FormInput = <T extends FieldValues>({
@@ -56,6 +57,7 @@ const FormInput = <T extends FieldValues>({
   setCallingCode,
   placeholder,
   additionalProps,
+  testID,
 }: FormInputProps<T>) => {
   const [open, setOpen] = useState(false);
 
@@ -123,6 +125,7 @@ const FormInput = <T extends FieldValues>({
                 <>
                   <View style={styles.input}>
                     <Picker
+                      testID={testID}
                       mode="dropdown"
                       selectedValue={value ?? ""}
                       onValueChange={(v) => {
@@ -133,6 +136,7 @@ const FormInput = <T extends FieldValues>({
                     >
                       {options.map((i) => (
                         <Picker.Item
+                          testID={i.label}
                           key={i.label}
                           label={i.label}
                           value={i.value}
@@ -202,6 +206,7 @@ const FormInput = <T extends FieldValues>({
                   autoCapitalize="none"
                   keyboardType="email-address"
                   placeholder={placeholder}
+                  testID={testID}
                 />
                 {!!error && <Text style={styles.error}>{errorMessage}</Text>}
               </>
@@ -217,6 +222,7 @@ const FormInput = <T extends FieldValues>({
                   value={value}
                   secureTextEntry
                   placeholder={placeholder}
+                  testID={testID}
                 />
                 {!!error && <Text style={styles.error}>{errorMessage}</Text>}
               </>
@@ -231,6 +237,7 @@ const FormInput = <T extends FieldValues>({
                   onBlur={onBlur}
                   value={value}
                   placeholder={placeholder ? placeholder : "YYYY-MM-DD"}
+                  testID={testID}
                 />
                 {!!error && <Text style={styles.error}>{errorMessage}</Text>}
               </>
@@ -246,6 +253,7 @@ const FormInput = <T extends FieldValues>({
                   onBlur={onBlur}
                   value={String(value ?? "")}
                   placeholder={placeholder}
+                  testID={testID}
                 />
                 {!!error && <Text style={styles.error}>{errorMessage}</Text>}
               </>
@@ -261,6 +269,7 @@ const FormInput = <T extends FieldValues>({
                 value={value}
                 placeholder={placeholder}
                 {...additionalProps}
+                testID={testID}
               />
               {!!error && <Text style={styles.error}>{errorMessage}</Text>}
             </>
