@@ -92,12 +92,11 @@ components:
           format: email
         phone:
           type: string
-          example: "+18-202-555-0173"
+          example: "+182025550173"
         birthDate:
           type: string
           format: date
         address:
-          type: object
           $ref: '#/components/schemas/Address'
 
     SignUpUserRequest:

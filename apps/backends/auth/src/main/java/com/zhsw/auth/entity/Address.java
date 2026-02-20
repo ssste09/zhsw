@@ -2,6 +2,7 @@ package com.zhsw.auth.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class Address {
     @Column(nullable = false, name = "address")
     private String address;
 
-    @NotBlank(message = "Street number is required")
+    @NotNull(message = "Street number is required")
     @Column(nullable = false, name = "street_number")
     private Long streetNumber;
 

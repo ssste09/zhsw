@@ -5,6 +5,7 @@ import com.zhsw.apis.service.WeatherService;
 import org.openapitools.api.WeatherApi;
 import org.openapitools.model.Weather;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,6 +18,7 @@ public class WeatherController implements WeatherApi {
         this.weatherMapper = weatherMapper;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @Override
     public ResponseEntity<Weather> weatherGET(String cityName) {
         var coordinates = weatherService.getCoordinates(cityName);

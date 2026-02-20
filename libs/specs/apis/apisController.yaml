@@ -41,6 +41,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Events'
+  /location:
+    get:
+      tags:
+        - locationApiController
+      summary: Some summary
+      description: >
+        At least one of the following query parameters must be provided:
+        **postalCode** or **city**.
+      operationId: locationGET
+      parameters:
+        - name: postalCode
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: city
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: returns the location details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locations'
+
 
 components:
   schemas:
@@ -110,4 +138,26 @@ components:
         locationImageUrl:
           type: string
         description:
+          type: string
+    Locations:
+      type: object
+      required:
+        - locationsList
+      properties:
+        locationsList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    Location:
+      type: object
+      required:
+        - postalCode
+        - city
+        - canton
+      properties:
+        postalCode:
+          type: string
+        city:
+          type: string
+        canton:
           type: string
