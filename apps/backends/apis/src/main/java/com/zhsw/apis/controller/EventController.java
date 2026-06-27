@@ -3,9 +3,11 @@ package com.zhsw.apis.controller;
 import com.zhsw.apis.mapper.EventMapper;
 import com.zhsw.apis.service.EventService;
 import org.openapitools.api.EventsApi;
-import org.openapitools.model.Events;
+import org.openapitools.model.EventGroup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class EventController implements EventsApi {
@@ -19,10 +21,12 @@ public class EventController implements EventsApi {
     }
 
     @Override
-    public ResponseEntity<Events> eventsGET(String location) {
+    public ResponseEntity<List<EventGroup>> eventsGET(String location, String mood) {
         return eventService
-                .getEvents(location)
-                .map(eventMapper::mapExternalEventResultToEvents)
+                .getFilteredResults(location, mood)
+                .map(results -> results.stream()
+                        .map(eventMapper::mapExternalEventResultToEvents)
+                        .toList())
                 .map(ResponseEntity::ok)
                 .get();
     }

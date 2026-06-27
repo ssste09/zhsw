@@ -18,7 +18,7 @@ public class LocationService {
     }
 
     public Try<ExternalLocationResult> getLocation(String postalCode, String city) {
-        var resultApi2 = Try.of(() -> webClient
+        var resultApi = Try.of(() -> webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/ch/Localities")
@@ -31,7 +31,7 @@ public class LocationService {
                 .block());
         return Try.of(() -> {
             var result = new ExternalLocationResult();
-            result.setLocations(resultApi2.get());
+            result.setLocations(resultApi.get());
             return result;
         });
     }

@@ -4,5 +4,8 @@
     <file url="file://$PROJECT_DIR$/apps/backends/apis/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/apps/backends/auth/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/apps/backends/product/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/apps/backends/profile/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/libs/java/auth-filter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/libs/java/auth-filter/src/main/resources" charset="UTF-8" />
   </component>
 </project>

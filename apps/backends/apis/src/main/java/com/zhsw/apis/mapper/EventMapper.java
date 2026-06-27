@@ -4,7 +4,7 @@ import com.zhsw.apis.model.ExternalEvent;
 import com.zhsw.apis.model.ExternalEventResult;
 import lombok.Data;
 import org.openapitools.model.Event;
-import org.openapitools.model.Events;
+import org.openapitools.model.EventGroup;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,10 +27,11 @@ public class EventMapper {
                 + externalEvent.getAddress().get(1);
     }
 
-    public Events mapExternalEventResultToEvents(ExternalEventResult externalEventResult) {
+    public EventGroup mapExternalEventResultToEvents(ExternalEventResult externalEventResult) {
         List<Event> events = externalEventResult.getEvents_results().stream()
                 .map(this::mapExternalEventToEvent)
                 .toList();
-        return new Events(events);
+
+        return new EventGroup(externalEventResult.getEventType(), events);
     }
 }

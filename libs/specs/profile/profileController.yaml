@@ -2,3 +2,183 @@ openapi: 3.0.1
 info:
   title: Profile API
   version: 1.0.0
+paths:
+  /profile:
+    post:
+      tags:
+        - profileController
+      summary: Some summary
+      operationId: createProfile
+      requestBody:
+        description: "User profile questionnaire"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUserRequest"
+      responses:
+        "200":
+          description: returns user's profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+components:
+  schemas:
+    ProfileType:
+      type: string
+      enum:
+        - ADVENTUROUS
+        - CHILLED
+        - PARTY_LOVER
+    ActivityType:
+      type: string
+      enum:
+        - OUTDOOR
+        - CULTURE
+        - FOOD_AND_DRINKS
+        - NIGHTLIFE
+        - FITNESS
+        - WELLNESS
+        - SHOPPING
+        - LIVE_EVENTS
+        - SOCIAL
+        - QUIET
+    SocialVibeType:
+      type: string
+      enum:
+        - SOLO
+        - PARTNER
+        - SMALL_GROUP
+        - ANY
+    IntensityType:
+      type: string
+      enum:
+        - LOW
+        - MEDIUM
+        - HIGH
+    BudgetType:
+      type: string
+      enum:
+        - FREE
+        - CHEAP
+        - MID
+        - EXPENSIVE
+    PreferredTimeType:
+      type: string
+      enum:
+        - MORNING
+        - AFTERNOON
+        - EVENING
+        - NIGHT
+    StressedHelpType:
+      type: string
+      enum:
+        - WALK
+        - SPA
+        - CAFE
+        - YOGA
+        - MUSEUM
+        - SHOPPING
+        - COMFORT_FOOD
+        - HOME
+    SadHelpType:
+      type: string
+      enum:
+        - SOCIAL_ACTIVITIES
+        - OUTDOOR_WALK
+        - COMFORT_FOOD
+        - LIVE_MUSIC_CINEMA
+        - CAFE
+        - SPORT
+        - CULTURE
+    EnergeticWantsType:
+      type: string
+      enum:
+        - SPORT
+        - OUTDOORS_HIKING
+        - NIGHTLIFE
+        - EVENTS
+        - RESTAURANTS_BARS
+        - EXPLORING
+    FoodPreferencesType:
+      type: string
+      enum:
+        - VEGETARIAN
+        - VEGAN
+        - HALAL
+        - GLUTEN_FREE
+        - NONE
+    AvoidType:
+      type: string
+      enum:
+        - CROWDED
+        - LOUD
+        - ALCOHOL
+        - LONG_LINES
+        - OUTDOOR_WEATHER_SENSITIVE
+        - LATE_NIGHT
+    Profile:
+      type: object
+      required:
+        - userId
+        - profileType
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 123456
+        userId:
+          type: integer
+          format: int64
+          example: 123456
+        profileType:
+          $ref: "#/components/schemas/ProfileType"
+    ProfileUserRequest:
+      type: object
+      properties:
+        activity_types:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityType"
+        social_vibe:
+          $ref: "#/components/schemas/SocialVibeType"
+        intensity:
+          $ref: "#/components/schemas/IntensityType"
+        max_travel_time:
+          description: "Intended in minutes. If -1 no preference on time"
+          type: integer
+          format: int64
+        budget:
+          $ref: "#/components/schemas/BudgetType"
+        preferred_time:
+          type: array
+          items:
+            $ref: "#/components/schemas/PreferredTimeType"
+        stressed_help:
+          type: array
+          items:
+            $ref: "#/components/schemas/StressedHelpType"
+        sad_help:
+          type: array
+          items:
+            $ref: "#/components/schemas/SadHelpType"
+        energetic_wants:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnergeticWantsType"
+        food_preferences:
+          type: array
+          items:
+            $ref: "#/components/schemas/FoodPreferencesType"
+        avoid:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvoidType"
+      required:
+        - activity_types
+        - social_vibe
+        - stressed_help
+        - sad_help
+        - energetic_wants
+        - food_preferences

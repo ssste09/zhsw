@@ -46,18 +46,15 @@ public class EventServiceTest {
     @Test
     void getEvents() throws Exception {
         mockWebServer.enqueue(
-                new MockResponse()
-                        .setHeader("Content-Type", "application/json")
-                        .setBody(
-                                """
-          {"events_results":[{"title":"Concert",
-          "date": {"when":"25 Oct, 22:31"},"address":["Zurcherstrasse 21, 3108", "Zurich"],
-          "event_location_map":{"image":"imageUrl"},"description":"Ed Sheeran concert"}, {"title":"Party",
-          "date": {"when":"28 Oct, 18:00"},"address":["Brunaustrasse 73, 2356", "Zurich"],
-          "event_location_map":{"image":"url"},"description":"50s party"}]}
-        """));
+                new MockResponse().setHeader("Content-Type", "application/json").setBody("""
+                      {"events_results":[{"title":"Concert",
+                      "date": {"when":"25 Oct, 22:31"},"address":["Zurcherstrasse 21, 3108", "Zurich"],
+                      "event_location_map":{"image":"imageUrl"},"description":"Ed Sheeran concert"}, {"title":"Party",
+                      "date": {"when":"28 Oct, 18:00"},"address":["Brunaustrasse 73, 2356", "Zurich"],
+                      "event_location_map":{"image":"url"},"description":"50s party"}]}
+                    """));
 
-        var c = eventService.getEvents("Zurich");
+        var c = eventService.getFilteredEvents("Zurich", "");
 
         var req = mockWebServer.takeRequest();
         String decoded = URLDecoder.decode(req.getPath(), StandardCharsets.UTF_8);
