@@ -1,9 +1,10 @@
 import { useSignUp } from "hooks/auth";
-import { StyleSheet, View, Button, ScrollView } from "react-native";
+import { StyleSheet, View, Button, ScrollView, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { isValidNumber } from "react-native-phone-entry";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { isE2E } from "e2e/utils/isE2E";
 import {
   SignUpUserRequest,
   SignUpUserRequestGenderEnum,
@@ -15,7 +16,7 @@ import { validateBirthDate, validatePassword } from "./utils";
 const Signup = () => {
   const navigation = useNavigation<any>();
 
-  const { trigger: signUp } = useSignUp();
+  const { trigger: signUp, error: signupError } = useSignUp();
 
   const defaultCountryCode = "IT";
 
@@ -55,7 +56,7 @@ const Signup = () => {
       name: "",
       lastName: "",
       email: "",
-      gender: undefined,
+      gender: isE2E ? SignUpUserRequestGenderEnum.Female : undefined,
       phone: "",
       birthDate: "",
       address: {
@@ -79,13 +80,19 @@ const Signup = () => {
   console.log("errors", errors);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      testID="signup"
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+    >
       <FormInput
         label="First name"
         control={control}
         name="name"
         rules={{ required: true }}
         errors={errors}
+        testID="firstName"
       />
       <FormInput
         label="Last name"
@@ -93,6 +100,7 @@ const Signup = () => {
         name="lastName"
         rules={{ required: true }}
         errors={errors}
+        testID="lastName"
       />
 
       <FormInput
@@ -108,6 +116,7 @@ const Signup = () => {
           },
         }}
         errors={errors}
+        testID="signupEmail"
       />
 
       <FormInput
@@ -119,6 +128,7 @@ const Signup = () => {
         type="select"
         options={genderItems}
         trigger={triggerValidateForField}
+        testID="gender"
       />
 
       <FormInput
@@ -155,6 +165,7 @@ const Signup = () => {
           validate: (value) => validateBirthDate(value),
         }}
         errors={errors}
+        testID="birthDate"
       />
 
       <FormInput
@@ -163,6 +174,7 @@ const Signup = () => {
         name="address.street"
         rules={{ required: true }}
         errors={errors}
+        testID="street"
       />
 
       <FormInput
@@ -172,6 +184,7 @@ const Signup = () => {
         name="address.streetNumber"
         rules={{ required: true }}
         errors={errors}
+        testID="streetNumber"
       />
 
       <FormInput
@@ -180,6 +193,7 @@ const Signup = () => {
         name="address.city"
         rules={{ required: true }}
         errors={errors}
+        testID="city"
       />
 
       <FormInput
@@ -188,6 +202,7 @@ const Signup = () => {
         name="address.postalCode"
         rules={{ required: true }}
         errors={errors}
+        testID="postalCode"
       />
 
       <FormInput
@@ -196,6 +211,7 @@ const Signup = () => {
         name="address.country"
         rules={{ required: true }}
         errors={errors}
+        testID="country"
       />
 
       <FormInput
@@ -208,6 +224,7 @@ const Signup = () => {
           validate: (value) => validatePassword(value),
         }}
         errors={errors}
+        testID="signupPassword"
       />
 
       <View style={{ marginTop: 16 }}>
@@ -215,7 +232,11 @@ const Signup = () => {
           title={"Sign up"}
           onPress={handleSubmit(onValid)}
           disabled={isSubmitting}
+          testID="submitSignup"
         />
+        {signupError && (
+          <Text style={styles.error}>Email is already registered</Text>
+        )}
       </View>
     </ScrollView>
   );
@@ -243,6 +264,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 10,
+  },
+  error: {
+    color: "red",
+    marginTop: 8,
+    fontWeight: "600",
   },
 });
 

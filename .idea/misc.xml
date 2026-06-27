@@ -10,6 +10,9 @@
         <option value="$PROJECT_DIR$/apps/backends/auth/pom.xml" />
         <option value="$PROJECT_DIR$/apps/backends/product/pom.xml" />
         <option value="$PROJECT_DIR$/apps/backends/apis/pom.xml" />
+        <option value="$PROJECT_DIR$/apps/backends/profile/pom.xml" />
+        <option value="$PROJECT_DIR$/libs/java/AuthFilter/pom.xml" />
+        <option value="$PROJECT_DIR$/libs/java/auth-filter/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

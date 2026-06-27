@@ -26,6 +26,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install shared auth-filter library
+        run: mvn install -DskipTests -f libs/java/auth-filter/pom.xml
+
       - name: Make Maven wrapper executable
         working-directory: apps/backends/${{ matrix.backend }}
         run: chmod +x mvnw

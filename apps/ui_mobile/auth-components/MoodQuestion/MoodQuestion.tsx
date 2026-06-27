@@ -14,12 +14,12 @@ const MOOD_EMOJI: Record<string, string> = {
 
 const MoodQuestion = () => {
   const navigation = useNavigation<any>();
-  const [selected, setSelected] = useState("");
+  const [selectedMood, setSelectedMood] = useState("");
 
   const handlePress = (choiceId: string) => {
-    setSelected(choiceId);
+    setSelectedMood(choiceId);
     navigation.navigate("Location");
-    console.log(selected);
+    console.log(selectedMood);
   };
 
   return (
@@ -27,20 +27,20 @@ const MoodQuestion = () => {
       <Text style={styles.questionText}>{MOOD_NOW_QUESTION.text}</Text>
 
       <View style={styles.grid}>
-        {MOOD_NOW_QUESTION.choices.map((choice) => {
+        {MOOD_NOW_QUESTION.choices?.map((choice) => {
           return (
             <Pressable
               key={choice.id}
               onPress={() => handlePress(choice.id)}
               style={[
                 styles.moodCard,
-                selected === choice.id && styles.moodCardSelected,
+                selectedMood === choice.id && styles.moodCardSelected,
               ]}
             >
               <Text
                 style={[
                   styles.label,
-                  selected === choice.id && styles.labelSelected,
+                  selectedMood === choice.id && styles.labelSelected,
                 ]}
               >
                 {choice.label}

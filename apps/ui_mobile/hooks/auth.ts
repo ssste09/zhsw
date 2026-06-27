@@ -4,18 +4,17 @@ import * as SecureStore from "expo-secure-store";
 import { jwtDecode } from "jwt-decode";
 import { authApi } from "clients/auth";
 
-export const storeAuthToken = async (token: string) => {
+export const storeAuthToken = (token: string) => {
   try {
-    await SecureStore.setItemAsync("auth", token);
+    SecureStore.setItem("auth", token);
   } catch (error) {
     console.error("Failed to store token securely", error);
   }
 };
 
-export const getAuthToken = async () => {
+export const getAuthToken = () => {
   try {
-    const token = await SecureStore.getItemAsync("auth");
-
+    const token = SecureStore.getItem("auth");
     return token;
   } catch (error) {
     console.error("Failed to retrieve token", error);
@@ -46,7 +45,7 @@ export const useSignUp = () =>
   );
 
 export const decodeToken = async (): Promise<string | null> => {
-  const token = await getAuthToken();
+  const token = getAuthToken();
   if (!token) return null;
 
   const decoded = jwtDecode<{ sub?: string }>(token);

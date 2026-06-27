@@ -24,13 +24,14 @@ export const Login = () => {
       const data = await trigger({ email, password });
       const token = data.token;
 
+      console.log("token", token);
       if (!token) {
         console.error("No token returned from signup");
         setError(true);
         return;
       }
 
-      await storeAuthToken(token);
+      storeAuthToken(token);
       //const storedToken = await getAuthToken();
       //console.log("Token from SecureStore:", storedToken);
 
@@ -51,6 +52,7 @@ export const Login = () => {
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        testID="login"
       >
         <Text style={styles.title}>Welcome</Text>
 
@@ -86,6 +88,7 @@ export const Login = () => {
           <Button
             title="Create Account"
             onPress={() => navigation.navigate("Signup")}
+            testID="createAccount"
           />
         </View>
       </ScrollView>

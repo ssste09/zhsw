@@ -32,6 +32,14 @@ describe("Successfully Login", () => {
       .toExist()
       .withTimeout(5000);
   });
+
+  it("Should go to signup", async () => {
+    await element(by.id("createAccount")).tap();
+
+    await waitFor(element(by.id("signup")))
+      .toBeVisible()
+      .withTimeout(5000);
+  });
 });
 
 describe("Login Error", () => {

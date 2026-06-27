@@ -1,5 +1,6 @@
-package com.zhsw.apis.config;
+package com.zhsw.filter;
 
+import com.zhsw.model.LoginUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -7,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,9 +19,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class JwtAuthFilter extends OncePerRequestFilter {
-    @Value("${jwt.secret.key}")
-    private String secretKey;
+    private final String secretKey;
 
+    public JwtAuthFilter(String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -37,20 +39,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         .parseClaimsJws(token)
                         .getBody();
 
-                String username = claims.getSubject();
+                var loginUser = new LoginUser(
+                        claims.getSubject(), Long.valueOf(claims.get("userId").toString()));
                 List<SimpleGrantedAuthority> authorities =
                         Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
-                Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                Authentication auth = new UsernamePasswordAuthenticationToken(loginUser, null, authorities);
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         chain.doFilter(request, response);
     }
 }
-

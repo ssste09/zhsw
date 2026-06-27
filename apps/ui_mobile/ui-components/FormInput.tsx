@@ -98,6 +98,8 @@ const FormInput = <T extends FieldValues>({
                     withCountryNameButton: true,
                   }}
                   maskInputProps={{
+                    testID: "phoneNumber",
+                    keyboardType: "phone-pad",
                     onBlur: () => {
                       onBlur();
                       trigger?.(name);
@@ -151,7 +153,11 @@ const FormInput = <T extends FieldValues>({
 
             return (
               <>
-                <Pressable style={styles.input} onPress={() => setOpen(true)}>
+                <Pressable
+                  style={styles.input}
+                  onPress={() => setOpen(true)}
+                  testID={testID}
+                >
                   <Text>{selectedLabel}</Text>
                 </Pressable>
 
@@ -165,6 +171,7 @@ const FormInput = <T extends FieldValues>({
                   />
                   <View style={{ backgroundColor: "white" }}>
                     <Pressable
+                      testID="genderDone"
                       onPress={() => {
                         setOpen(false);
                         validateNow();
@@ -173,8 +180,8 @@ const FormInput = <T extends FieldValues>({
                     >
                       <Text style={{ fontWeight: "600" }}>Done</Text>
                     </Pressable>
-
                     <Picker
+                      testID={testID}
                       selectedValue={value ?? ""}
                       onValueChange={(v) => {
                         onChange(v === "" ? undefined : v);
@@ -183,6 +190,7 @@ const FormInput = <T extends FieldValues>({
                     >
                       {options.map((i) => (
                         <Picker.Item
+                          testID={testID}
                           key={i.label}
                           label={i.label}
                           value={i.value}

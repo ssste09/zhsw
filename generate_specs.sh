@@ -113,7 +113,7 @@ EOF
 {
   "name": "$pkg_name",
   "version": "0.0.1",
-  "main": "dist/index.ts",
+  "main": "src/index.ts",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json"

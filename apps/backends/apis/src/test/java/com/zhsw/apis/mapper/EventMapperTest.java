@@ -7,7 +7,7 @@ import com.zhsw.apis.model.ExternalEventResult;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openapitools.model.Event;
-import org.openapitools.model.Events;
+import org.openapitools.model.EventGroup;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class EventMapperTest {
                 .locationImageUrl("imageUrl1")
                 .description("Ed Sheeran Concert");
 
-        var expected = new Events().eventsList(List.of(expectedEvent, expectedEvent1));
+        var expected = new EventGroup().eventsList(List.of(expectedEvent, expectedEvent1));
 
         var mapped = eventMapper.mapExternalEventResultToEvents(resultList);
 

@@ -1,14 +1,52 @@
+import {
+  ActivityType,
+  AvoidType,
+  BudgetType,
+  EnergeticWantsType,
+  FoodPreferencesType,
+  IntensityType,
+  PreferredTimeType,
+  SadHelpType,
+  SocialVibeType,
+  StressedHelpType,
+} from "@myorg/profile_api";
+
+export type QuestionnaireIdType =
+  | ActivityType
+  | SocialVibeType
+  | IntensityType
+  | BudgetType
+  | PreferredTimeType
+  | StressedHelpType
+  | SadHelpType
+  | EnergeticWantsType
+  | FoodPreferencesType
+  | AvoidType
+  | MoodType;
+
 export type Choice = {
-  id: string;
+  id: QuestionnaireIdType;
   label: string;
 };
 
+enum MoodType {
+  calm = "CALM",
+  stressed = "STRESSED",
+  sad_low = "SAD_LOW",
+  happy = "HAPPY",
+  energetic = "ENERGETIC",
+  bored = "BORED",
+}
+
+export type QuestionType = "single" | "multi" | "number" | "string";
+
 export type Question = {
-  id: string;
+  id: QuestionId;
   text: string;
-  type: "single" | "multi";
+  type: QuestionType;
   required?: boolean;
-  choices: Choice[];
+  choices?: Choice[];
+  value?: number | string;
   // Optional metadata (handy later for grouping / logic)
   section?: "basics" | "energy" | "budget" | "mood_mapping" | "filters";
 };
@@ -19,187 +57,202 @@ export type QuestionnaireProps = {
   questions: Question[];
 };
 
+export enum QuestionId {
+  ActivityType = "ActivityType",
+  SocialVibe = "SocialVibe",
+  Intensity = "Intensity",
+  MaxTravelTime = "MaxTravelTime",
+  Budget = "Budget",
+  PreferredTime = "PreferredTime",
+  StressedHelp = "StressedHelp",
+  SadHelp = "SadHelp",
+  EnergeticWants = "EnergeticWants",
+  FoodPreferences = "FoodPreferences",
+  Avoid = "Avoid",
+  MoodNow = "MoodNow",
+}
+
 export const QUESTIONNAIRE: QuestionnaireProps = {
   id: "preferences_1",
   title: "Your Preferences",
   questions: [
     {
-      id: "activity_types",
+      id: QuestionId.ActivityType,
       section: "basics",
       text: "What kinds of activities do you generally enjoy?",
       type: "multi",
       required: true,
       choices: [
-        { id: "outdoor", label: "Outdoor / Nature" },
-        { id: "culture", label: "Culture & Museums" },
-        { id: "food", label: "Food & Drinks" },
-        { id: "nightlife", label: "Nightlife" },
-        { id: "fitness", label: "Sports / Fitness" },
-        { id: "wellness", label: "Wellness / Relax" },
-        { id: "shopping", label: "Shopping" },
-        { id: "live_events", label: "Live events (concerts, theatre)" },
-        { id: "social", label: "Social / Meet people" },
-        { id: "quiet", label: "Quiet / Solo activities" },
+        { id: ActivityType.Outdoor, label: "Outdoor / Nature" },
+        { id: ActivityType.Culture, label: "Culture & Museums" },
+        { id: ActivityType.FoodAndDrinks, label: "Food & Drinks" },
+        { id: ActivityType.Nightlife, label: "Nightlife" },
+        { id: ActivityType.Fitness, label: "Sports / Fitness" },
+        { id: ActivityType.Wellness, label: "Wellness / Relax" },
+        { id: ActivityType.Shopping, label: "Shopping" },
+        {
+          id: ActivityType.LiveEvents,
+          label: "Live events (concerts, theatre)",
+        },
+        { id: ActivityType.Social, label: "Social / Meet people" },
+        { id: ActivityType.Quiet, label: "Quiet / Solo activities" },
       ],
     },
     {
-      id: "social_vibe",
+      id: QuestionId.SocialVibe,
       section: "basics",
       text: "What's your usual social vibe?",
       type: "single",
       required: true,
       choices: [
-        { id: "solo", label: "Solo" },
-        { id: "partner", label: "With a partner" },
-        { id: "small_group", label: "Small group" },
-        { id: "any", label: "Any / depends" },
+        { id: SocialVibeType.Solo, label: "Solo" },
+        { id: SocialVibeType.Partner, label: "With a partner" },
+        { id: SocialVibeType.SmallGroup, label: "Small group" },
+        { id: SocialVibeType.Any, label: "Any / depends" },
       ],
     },
     {
-      id: "intensity",
+      id: QuestionId.Intensity,
       section: "energy",
       text: "Preferred intensity level",
       type: "single",
       required: false,
       choices: [
-        { id: "low", label: "Low (chill)" },
-        { id: "medium", label: "Medium" },
-        { id: "high", label: "High (active/adventurous)" },
+        { id: IntensityType.Low, label: "Low (chill)" },
+        { id: IntensityType.Medium, label: "Medium" },
+        { id: IntensityType.High, label: "High (active/adventurous)" },
       ],
     },
     {
-      id: "max_travel_time",
+      id: QuestionId.MaxTravelTime,
       section: "energy",
       text: "How far are you willing to go?",
-      type: "single",
+      type: "number",
       required: false,
-      choices: [
-        { id: "15", label: "Up to 15 min" },
-        { id: "30", label: "Up to 30 min" },
-        { id: "60", label: "Up to 60 min" },
-        { id: "any", label: "No preference" },
-      ],
     },
     {
-      id: "budget",
+      id: QuestionId.Budget,
       section: "budget",
       text: "Typical budget for an activity",
       type: "single",
       required: false,
       choices: [
-        { id: "free", label: "Free / very low" },
-        { id: "budget", label: "€ (budget)" },
-        { id: "mid", label: "€€ (mid)" },
-        { id: "treat", label: "€€€ (treat)" },
+        { id: BudgetType.Free, label: "Free / very low" },
+        { id: BudgetType.Cheap, label: "€ (budget)" },
+        { id: BudgetType.Mid, label: "€€ (mid)" },
+        { id: BudgetType.Expensive, label: "€€€ (treat)" },
       ],
     },
     {
-      id: "preferred_time",
+      id: QuestionId.PreferredTime,
       section: "budget",
       text: "When do you usually prefer activities?",
       type: "multi",
       required: false,
       choices: [
-        { id: "morning", label: "Morning" },
-        { id: "afternoon", label: "Afternoon" },
-        { id: "evening", label: "Evening" },
-        { id: "night", label: "Night" },
+        { id: PreferredTimeType.Morning, label: "Morning" },
+        { id: PreferredTimeType.Afternoon, label: "Afternoon" },
+        { id: PreferredTimeType.Evening, label: "Evening" },
+        { id: PreferredTimeType.Night, label: "Night" },
       ],
     },
     {
-      id: "stressed_help",
+      id: QuestionId.StressedHelp,
       section: "mood_mapping",
       text: "When you feel stressed, what helps most?",
       type: "multi",
       required: true,
       choices: [
-        { id: "park_walk", label: "Walk in nature / parks" },
-        { id: "spa", label: "Spa / wellness" },
-        { id: "quiet_cafe", label: "Quiet café" },
-        { id: "yoga", label: "Yoga / meditation" },
-        { id: "museum_calm", label: "Museum / calm culture" },
-        { id: "shopping", label: "Shopping" },
-        { id: "comfort_food", label: "Comfort food" },
-        { id: "low_stimulation", label: "Stay home / low stimulation" },
+        { id: StressedHelpType.Walk, label: "Walk in nature / parks" },
+        { id: StressedHelpType.Spa, label: "Spa / wellness" },
+        { id: StressedHelpType.Cafe, label: "Quiet café" },
+        { id: StressedHelpType.Yoga, label: "Yoga / meditation" },
+        { id: StressedHelpType.Museum, label: "Museum / calm culture" },
+        { id: StressedHelpType.Shopping, label: "Shopping" },
+        { id: StressedHelpType.ComfortFood, label: "Comfort food" },
+        { id: StressedHelpType.Home, label: "Stay home / low stimulation" },
       ],
     },
     {
-      id: "sad_help",
+      id: QuestionId.SadHelp,
       section: "mood_mapping",
       text: "When you feel sad/low, what helps most?",
       type: "multi",
       required: true,
       choices: [
-        { id: "social_activities", label: "Social activities" },
-        { id: "light_outdoor_walk", label: "Light outdoor walk" },
-        { id: "comfort_food", label: "Comfort food" },
-        { id: "live_music_cinema", label: "Live music / cinema" },
-        { id: "cute_cafes", label: "Cute cafés" },
-        { id: "gym_movement", label: "Gym / movement" },
-        { id: "museums_culture", label: "Museums / culture" },
+        { id: SadHelpType.SocialActivities, label: "Social activities" },
+        { id: SadHelpType.OutdoorWalk, label: "Light outdoor walk" },
+        { id: SadHelpType.ComfortFood, label: "Comfort food" },
+        { id: SadHelpType.LiveMusicCinema, label: "Live music / cinema" },
+        { id: SadHelpType.Cafe, label: "Cute cafés" },
+        { id: SadHelpType.Sport, label: "Gym / movement" },
+        { id: SadHelpType.Culture, label: "Museums / culture" },
       ],
     },
     {
-      id: "energetic_wants",
+      id: QuestionId.EnergeticWants,
       section: "mood_mapping",
       text: "When you feel energetic, what do you want?",
       type: "multi",
       required: true,
       choices: [
-        { id: "sports_workouts", label: "Sports / workouts" },
-        { id: "hiking_outdoors", label: "Hiking / outdoors" },
-        { id: "nightlife", label: "Nightlife" },
-        { id: "events", label: "Events" },
-        { id: "new_restaurants_bars", label: "Trying new restaurants / bars" },
-        { id: "explore_neighborhoods", label: "Exploring neighborhoods" },
+        { id: EnergeticWantsType.Sport, label: "Sports / workouts" },
+        { id: EnergeticWantsType.OutdoorsHiking, label: "Hiking / outdoors" },
+        { id: EnergeticWantsType.Nightlife, label: "Nightlife" },
+        { id: EnergeticWantsType.Events, label: "Events" },
+        {
+          id: EnergeticWantsType.RestaurantsBars,
+          label: "Trying new restaurants / bars",
+        },
+        { id: EnergeticWantsType.Exploring, label: "Exploring neighborhoods" },
       ],
     },
     {
-      id: "food_preferences",
+      id: QuestionId.FoodPreferences,
       section: "filters",
       text: "Food preferences",
       type: "multi",
       required: true,
       choices: [
-        { id: "vegetarian", label: "Vegetarian" },
-        { id: "vegan", label: "Vegan" },
-        { id: "halal", label: "Halal" },
-        { id: "gluten_free", label: "Gluten-free" },
-        { id: "no_preference", label: "No preference" },
+        { id: FoodPreferencesType.Vegetarian, label: "Vegetarian" },
+        { id: FoodPreferencesType.Vegan, label: "Vegan" },
+        { id: FoodPreferencesType.Halal, label: "Halal" },
+        { id: FoodPreferencesType.GlutenFree, label: "Gluten-free" },
+        { id: FoodPreferencesType.None, label: "No preference" },
       ],
     },
     {
-      id: "avoid",
+      id: QuestionId.Avoid,
       section: "filters",
       text: "Avoid (we'll filter these out)",
       type: "multi",
       required: false,
       choices: [
-        { id: "crowded", label: "Crowded places" },
-        { id: "loud", label: "Loud places" },
-        { id: "alcohol_focused", label: "Alcohol-focused places" },
-        { id: "long_lines", label: "Long lines" },
+        { id: AvoidType.Crowded, label: "Crowded places" },
+        { id: AvoidType.Loud, label: "Loud places" },
+        { id: AvoidType.Alcohol, label: "Alcohol-focused places" },
+        { id: AvoidType.LongLines, label: "Long lines" },
         {
-          id: "outdoor_weather_sensitive",
+          id: AvoidType.OutdoorWeatherSensitive,
           label: "Outdoor (weather sensitive)",
         },
-        { id: "late_night", label: "Late-night activities" },
+        { id: AvoidType.LateNight, label: "Late-night activities" },
       ],
     },
   ],
 };
 
 export const MOOD_NOW_QUESTION: Question = {
-  id: "mood_now",
+  id: QuestionId.MoodNow,
   text: "How are you feeling right now?",
   type: "single",
   required: true,
   choices: [
-    { id: "calm", label: "Calm" },
-    { id: "stressed", label: "Stressed" },
-    { id: "sad_low", label: "Sad / low" },
-    { id: "happy", label: "Happy" },
-    { id: "energetic", label: "Energetic" },
-    { id: "bored", label: "Bored" },
+    { id: MoodType.calm, label: "Calm" },
+    { id: MoodType.stressed, label: "Stressed" },
+    { id: MoodType.sad_low, label: "Sad / low" },
+    { id: MoodType.happy, label: "Happy" },
+    { id: MoodType.energetic, label: "Energetic" },
+    { id: MoodType.bored, label: "Bored" },
   ],
 };
