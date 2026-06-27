@@ -15,6 +15,7 @@ tools/*.jar
 **/.turbo/
 **/.cache/
 *.tsbuildinfo
+**/package-lock.json
 
 # ── React Native – Android ───────────────────────────────────────────────────────
 apps/ui_mobile/android/build/
